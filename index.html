@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  
+
   <style>
     body {
       margin: 0;
@@ -32,6 +32,7 @@
       text-align: center;
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
       animation: fadeIn 1s ease-out;
+      z-index: 10;
     }
 
     h1 {
@@ -63,7 +64,6 @@
     }
 
     #launch-btn:hover {
-      background: linear-gradient(45deg, #f70069, #4b0055); 
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(79, 70, 229, 0.6);
     }
@@ -72,45 +72,61 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* iframe pantalla completa */
+    #full-iframe {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      display: none;
+      z-index: 9999;
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <div class="container" id="main-container">
     <h1>Carb0n</h1>
     <p>Do not close this tab to keep the link secret, just open and close if necessary</p>
     <button id="launch-btn">Open</button>
   </div>
 
+  <!-- iframe que ocupará toda la pantalla -->
+  <iframe id="full-iframe"></iframe>
+
   <script>
-    function openCloaker() {
-      try {
-        var win = window.open('about:blank', '_blank');
-        if (!win) throw new Error("Popup blocked");
+    function runSequence() {
+      // 1️⃣ Mostrar el iframe ocupando toda la página cargando IXL
+      const iframe = document.getElementById("full-iframe");
+      iframe.src = "https://www.ixl.com/";
+      iframe.style.display = "block";
 
-        var iframe = win.document.createElement('iframe');
-        iframe.style.width = "100%";
-        iframe.style.height = "100%";
-        iframe.style.border = "none";
-        iframe.src = "go/";
+      // Ocultar la tarjeta
+      document.getElementById("main-container").style.display = "none";
 
-        win.document.body.style.margin = "0";
-        win.document.body.style.height = "100vh";
-        win.document.body.appendChild(iframe);
+      // 2️⃣ Abrir nueva ventana con /go/
+      setTimeout(() => {
+        try {
+          const win = window.open("go/", "_blank");
+          if (!win) throw new Error("Popup blocked");
 
-        win.document.title = '\u200B'; 
-        var link = win.document.createElement('link');
-        link.rel = 'icon';
-        link.href = 'go/blank.ico';
-        win.document.head.appendChild(link);
-
-        window.location.replace("https://www.ixl.com/");
-      } catch (e) {
-        alert("Please allow popups for this site, then reload.");
-      }
+          // Ajustar ventana del cloaker
+          win.document.title = "\u200B";
+          const link = win.document.createElement("link");
+          link.rel = "icon";
+          link.href = "go/blank.ico";
+          win.document.head.appendChild(link);
+        } catch (e) {
+          alert("Please allow popups for this site, then reload.");
+        }
+      }, 300); // pequeña pausa para asegurar carga del iframe
     }
 
-    document.getElementById('launch-btn').addEventListener('click', openCloaker);
+    document.getElementById("launch-btn").addEventListener("click", runSequence);
   </script>
+
 </body>
 </html>
