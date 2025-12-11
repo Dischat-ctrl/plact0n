@@ -73,7 +73,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* iframe pantalla completa */
+    /* iframe fullscreen */
     #full-iframe {
       position: fixed;
       top: 0;
@@ -94,39 +94,50 @@
     <button id="launch-btn">Open</button>
   </div>
 
-  <!-- iframe que ocupará toda la pantalla -->
   <iframe id="full-iframe"></iframe>
 
   <script>
     function runSequence() {
-      // 1️⃣ Mostrar el iframe ocupando toda la página cargando IXL
+
+      // 1️⃣ Mostrar iframe fullscreen con IXL
       const iframe = document.getElementById("full-iframe");
       iframe.src = "https://www.ixl.com/";
       iframe.style.display = "block";
 
-      // Ocultar la tarjeta
       document.getElementById("main-container").style.display = "none";
 
-      // 2️⃣ Abrir nueva ventana con /go/
+
+      // 2️⃣ Abrir ventana about:blank y meter /go/ dentro de un iframe
       setTimeout(() => {
         try {
-          const win = window.open("go/", "_blank");
+          const win = window.open("about:blank", "_blank");
           if (!win) throw new Error("Popup blocked");
 
-          // Ajustar ventana del cloaker
+          win.document.body.style.margin = "0";
+          win.document.body.style.height = "100vh";
+
+          const cloakerFrame = win.document.createElement("iframe");
+          cloakerFrame.style.width = "100%";
+          cloakerFrame.style.height = "100%";
+          cloakerFrame.style.border = "none";
+          cloakerFrame.src = "go/";
+
+          win.document.body.appendChild(cloakerFrame);
+
+          // Personalizar nueva ventana
           win.document.title = "\u200B";
           const link = win.document.createElement("link");
           link.rel = "icon";
           link.href = "go/blank.ico";
           win.document.head.appendChild(link);
+
         } catch (e) {
           alert("Please allow popups for this site, then reload.");
         }
-      }, 300); // pequeña pausa para asegurar carga del iframe
+      }, 300);
     }
 
     document.getElementById("launch-btn").addEventListener("click", runSequence);
   </script>
-
 </body>
 </html>
